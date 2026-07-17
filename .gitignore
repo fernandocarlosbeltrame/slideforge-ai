@@ -1,0 +1,28 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build / local outputs
+dist/
+build/
+*.egg-info/
+
+# SlideForge generated files
+*_slideforge_*.pptx
+*_slideforge_*.pdf
+*_slideforge_*.html
+*_slideforge_*.md
+*_slideforge_*.docx
+*_slideforge_*.json
+*_slideforge_*.audit.txt
+*_slideforge_*.manifest.json
+*_slideforge_*_package.zip
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
