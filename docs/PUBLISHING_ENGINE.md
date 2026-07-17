@@ -1,22 +1,26 @@
-﻿# Publishing Engine
+# Publishing Engine - SlideForge AI v1.0.0
 
-A Fase 4 transforma o SlideForge AI em um motor de publicação corporativa multi-formato.
+O Publishing Engine publica multiplos formatos a partir do mesmo `PresentationPlan`.
 
-## Princípio central
+## Fluxo
 
-Todos os formatos são gerados a partir do mesmo `PresentationPlan`.
-
-Nenhum renderizador altera o domínio. Cada um apenas interpreta o plano e escreve seu próprio formato.
+```text
+PresentationPlan
+↓
+ContentAudit
+↓
+PublishingEngine
+↓
+DocumentRenderer(s)
+↓
+ManifestBuilder
+↓
+PublishingPackageBuilder
+```
 
 ## Renderizadores
 
-A porta principal é:
-
-```python
-DocumentRenderer.render(plan, output_path, audit=None, assets=None, theme=None)
-```
-
-Implementações atuais:
+Todos implementam a porta `DocumentRenderer`:
 
 - `PptxRenderer`
 - `PdfRenderer`
@@ -25,134 +29,53 @@ Implementações atuais:
 - `DocxRenderer`
 - `JsonRenderer`
 
-## PDF nativo
+Cada formato interpreta o mesmo plano, sem alterar o dominio.
 
-O `PdfRenderer` usa ReportLab. Ele não converte PowerPoint para PDF.
+## PDF executivo
+
+Na versao 1.0.0, o PDF e oficialmente um documento executivo. Ele pode conter capa, agenda e auditoria, portanto pode ter mais paginas que o PPTX.
 
 ## HTML
 
-O `HtmlRenderer` gera uma apresentação navegável com:
+O HTML e navegavel e local, com:
 
-- índice;
-- capítulos;
-- slides como seções;
+- indice;
+- capitulos;
 - imagens;
 - tabelas;
-- notas do apresentador;
-- links internos.
-
-## Markdown
-
-O `MarkdownRenderer` preserva:
-
-- hierarquia;
-- títulos;
-- listas;
-- tabelas;
-- imagens;
-- notas.
+- notas;
+- suporte a pacote ZIP.
 
 ## DOCX
 
-O `DocxRenderer` reorganiza o `PresentationPlan` como documento Word, preservando a lógica da apresentação.
+O DOCX e editavel, com capa, sumario textual, estilos, cabecalho/rodape e observacoes por slide.
+
+Limitacao conhecida: o sumario ainda nao e um campo nativo atualizavel do Word.
+
+## Markdown
+
+O Markdown preserva hierarquia, listas, tabelas, imagens, notas e rastreabilidade discreta.
 
 ## JSON
 
-O `JsonRenderer` exporta:
+O JSON contem metadados, slides, componentes, auditoria, rastreabilidade e estatisticas. Ele e a base para integracoes futuras.
 
-- metadados;
-- slides;
-- componentes;
-- layouts;
+## Manifesto e pacote
+
+O manifesto inclui:
+
+- versao;
+- schema;
+- hashes;
+- tamanhos;
+- estatisticas;
 - auditoria;
-- rastreabilidade;
-- estatísticas;
-- assets.
+- validacao de consistencia.
 
-Esse JSON é a base para integrações futuras.
+O ZIP inclui os arquivos publicados e assets relativos em estrutura portavel.
 
-## Asset Manager
+## Limitacoes conhecidas
 
-O `AssetManager` centraliza recursos como:
-
-- banners;
-- logos;
-- imagens;
-- placeholders;
-- ícones e recursos futuros.
-
-## Temas
-
-O `ThemeRegistry` empacota tokens visuais em `PublishingTheme`.
-
-Cada tema pode definir:
-
-- paleta;
-- cards;
-- tabelas;
-- timelines;
-- callouts;
-- cabeçalho;
-- rodapé.
-
-## Pontos de extensão para IA
-
-Foram criadas apenas interfaces, sem implementação:
-
-- `PresentationAdvisor`
-- `LayoutAdvisor`
-- `SummaryAdvisor`
-- `ThemeAdvisor`
-- `ContentAdvisor`
-
-## Como usar via código
-
-```python
-from pathlib import Path
-from slideforge.application.use_cases.publish_presentation import PublishPresentationUseCase
-
-result = PublishPresentationUseCase(theme_name="usiquimica").execute(
-    Path("entrada.docx"),
-    Path("saida"),
-    banner_path="banner.jpg",
-)
-```
-
-Arquivos gerados:
-
-- `saida.pptx`
-- `saida.pdf`
-- `saida.html`
-- `saida.md`
-- `saida.docx`
-- `saida.json`
-- `saida.audit.txt`
-
-## Sprint 4.1
-
-O Publishing Engine agora possui refinamento executivo dos formatos publicados, manifesto e pacote ZIP.
-
-Fluxo atualizado:
-
-`PresentationPlan -> DocumentRenderers -> ConsistencyValidator -> ManifestBuilder -> PackageBuilder`
-
-Notas nativas de PowerPoint e hyperlinks internos nativos no PPTX foram mantidos como evolucao futura por nao haver API publica segura em `python-pptx` para aplicar sem risco de corromper arquivos.
-
-## RC1 - Decisao oficial de publicacao
-
-### PDF executivo
-
-A partir da RC1, o PDF e tratado oficialmente como **documento executivo**, nao como espelho 1:1 do PowerPoint.
-
-Portanto, ele pode incluir:
-
-- capa;
-- agenda;
-- paginas de conteudo;
-- auditoria.
-
-A quantidade de paginas do PDF pode ser maior que a quantidade de slides do PPTX. O `PresentationPlan` continua sendo a fonte unica da verdade; paginas extras representam elementos editoriais do pacote de publicacao.
-
-### DOCX
-
-O DOCX possui sumario textual editavel. Um sumario nativo atualizavel do Word nao foi implementado nesta release para evitar manipulacao fragil de campos XML/COM. Essa melhoria fica registrada para evolucao futura.
+- Notas nativas no painel do PowerPoint ficam para versao futura.
+- Hyperlinks internos nativos no PPTX ficam para versao futura.
+- O PDF nao e espelho 1:1 do PPTX.

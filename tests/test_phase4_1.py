@@ -110,7 +110,7 @@ def test_rc1_public_outputs_do_not_contain_absolute_paths(tmp_path: Path):
     doc.add_heading("Título", level=1)
     doc.add_paragraph("Texto")
     doc.save(docx)
-    result = PublishPresentationUseCase(theme_name="usiquimica").execute(docx, tmp_path / "saida", formats={"json", "markdown", "html"}, create_package=True)
+    result = PublishPresentationUseCase(theme_name="corporate_blue").execute(docx, tmp_path / "saida", formats={"json", "markdown", "html"}, create_package=True)
     sensitive = ("C:\\Users", "C:/Users", "\\Users\\", "/Users/")
     for path in [d.path for d in result.documents] + [result.manifest_path]:
         text = Path(path).read_text(encoding="utf-8")
@@ -122,3 +122,11 @@ def test_rc1_public_outputs_do_not_contain_absolute_paths(tmp_path: Path):
                 text = zipf.read(name).decode("utf-8")
                 assert not any(marker in text for marker in sensitive), name
 
+
+
+
+def test_output_stem_with_dotted_version_keeps_full_name(tmp_path: Path):
+    from slideforge.application.publishing import output_with_extension
+
+    output = output_with_extension(tmp_path / "slideforge_ai_demo_v1.0.0", ".pptx")
+    assert output.name == "slideforge_ai_demo_v1.0.0.pptx"

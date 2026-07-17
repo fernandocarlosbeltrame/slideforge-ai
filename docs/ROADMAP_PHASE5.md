@@ -1,65 +1,46 @@
-# Roadmap da Fase 5 - Camada de IA
+﻿# Roadmap da Camada de IA - Pos v1.0
 
-A Fase 5 ainda nao deve ser implementada. Este documento define o escopo antes de qualquer codigo.
+A versao 1.0.0 entrega a arquitetura de IA, FakeAIProvider, Ollama local para resumo e avaliacao deterministica de qualidade.
 
-## Objetivo
+## Ja entregue
 
-Adicionar IA como camada de recomendacao e assistencia, mantendo o pipeline deterministico como fonte segura e auditavel.
+- Contratos neutros de IA.
+- `AIProvider` como ponto unico de entrada.
+- `FakeAIProvider` deterministico.
+- Stubs para provedores futuros.
+- `OllamaProvider` funcional apenas para resumo local.
+- Politica de elegibilidade para resumo.
+- Fallback seguro.
+- CLI de resumo.
+- Avaliador deterministico de qualidade.
+- Documentacao de IA e Ollama.
 
-## Onde a IA entra
+## Regras permanentes
 
-A IA deve entrar somente por interfaces ja previstas:
+- O pipeline deterministico continua sendo a fonte segura da verdade.
+- IA permanece opcional.
+- IA nao remove nem substitui conteudo original automaticamente.
+- Provedores externos reais exigem revisao de privacidade e consentimento.
 
-- `PresentationAdvisor`: avalia a apresentacao completa e sugere melhorias.
-- `LayoutAdvisor`: sugere layout alternativo para secoes complexas.
-- `SummaryAdvisor`: cria resumos de apoio, sem descartar conteudo original.
-- `ThemeAdvisor`: sugere tema visual com base no publico e no contexto.
-- `ContentAdvisor`: aponta excesso de densidade, repeticoes e riscos de legibilidade.
+## Recomendado para v1.1
 
-## O que permanece deterministico
+- Tela simples para configurar IA local.
+- Health check do Ollama.
+- Melhor exibicao dos metadados de resumo.
+- Relatorio de avaliacao integrado ao fluxo de publicacao.
 
-- Leitura dos documentos.
-- Criacao de `SourceDocument`, `DocumentSection` e `ContentBlock`.
-- Rastreabilidade dos blocos.
-- Auditoria de conteudo.
-- Exportacao PPTX, PDF, HTML, DOCX, Markdown e JSON.
-- Manifesto, hashes e pacote ZIP.
+## Futuro 2.x
 
-## Recursos candidatos a IA
+- OpenAI ou Azure OpenAI com opt-in explicito.
+- RAG.
+- Embeddings.
+- Banco vetorial.
+- Layout advisor real.
+- Reviewer de apresentacao com aprovacao humana.
+- Sugestoes de tema por IA.
 
-1. Sugestao de layout por secao.
-2. Reescrita opcional de titulos longos.
-3. Sugestao de quebra de slides densos.
-4. Resumo para notas do apresentador.
-5. Sugestao de tom visual e tema.
-6. Classificacao de publico-alvo.
-7. Checklist de qualidade visual e textual.
+## Nao recomendado antes da v1.0
 
-## Modelos suportados futuramente
-
-A arquitetura deve ser agnostica. Possiveis provedores:
-
-- OpenAI.
-- Azure OpenAI.
-- Modelos locais via adaptadores futuros.
-
-Nenhum provedor deve entrar diretamente no dominio.
-
-## Contratos necessarios
-
-- Entrada: `PresentationPlan`, contexto do usuario e politicas de seguranca.
-- Saida: sugestoes estruturadas, nunca alteracao direta do plano sem aprovacao.
-- Auditoria: toda sugestao deve ser registrada.
-
-## Regras de seguranca
-
-- Nao enviar documentos sensiveis para IA sem confirmacao explicita.
-- Permitir modo offline/deterministico.
-- Registrar prompts, decisoes e versoes de modelo quando IA for usada.
-
-## Entrega sugerida da Fase 5
-
-1. Definir contratos das sugestoes.
-2. Criar implementacao fake/local para testes.
-3. Adicionar opt-in de IA.
-4. Criar primeiro advisor real somente apos validacao.
+- Geracao completa por IA.
+- Reescrita automatica sem aprovacao.
+- Envio silencioso de documentos para provedores externos.

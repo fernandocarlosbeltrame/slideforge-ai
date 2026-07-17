@@ -1,136 +1,95 @@
 ﻿# Changelog
 
-## [0.2.0] - Fase 1: Base profissional
+## [1.0.0] - Release oficial
 
-### Adicionado
+### Consolidado
 
-- Nova arquitetura em camadas: domínio, aplicação, infraestrutura e apresentação.
-- Entidades puras de domínio para documentos, blocos, seções, planos de slides e auditoria.
-- Pipeline `SourceDocument -> PresentationPlan -> PPTXExporter -> ContentAudit`.
-- Motor determinístico inicial de seleção de layouts.
-- Leitores DOCX, TXT e Markdown na camada de infraestrutura.
-- Exportador PPTX inicial com layouts de capa, bullets, cards, timeline, comparação, tabela e imagem.
-- Testes automatizados com pytest.
-- Documentação de arquitetura.
-
-### Alterado
-
-- `app.py` agora é apenas o bootstrap da interface Tkinter nova.
-- Textos principais foram corrigidos para UTF-8 legível.
-
-### Preservado
-
-- MVP anterior copiado para `slideforge/legacy`.
-- O usuário continua podendo selecionar documento, logo/banner, destino e gerar PowerPoint.
-
-## [0.3.0] - Fase 2: Fidelidade de conteúdo e qualidade visual
-
-### Adicionado
-
-- Extração de imagens DOCX em ordem aproximada por XML.
-- Leitura estruturada de tabelas DOCX.
-- Leitor PDF inicial com PyMuPDF.
-- `SlideGeometry`, `BoundingBox`, `ImageFitCalculator`, `TypographyFitter` e `PresentationValidator`.
-- Tema estruturado `corporate_blue` e `usiquimica`.
-- Exportador PPTX com áreas seguras, banner proporcional, rodapé fixo e imagens sem distorção.
-- Auditoria expandida com imagens, títulos ajustados, alertas e overflows.
-- Interface Tkinter com PDF, seleção de tema, preservação de conteúdo e relatório de auditoria.
-- Testes adicionais para imagem, PDF, tabela, geometria segura, fit proporcional e geração PPTX.
-
-### Corrigido
-
-- Banner/logo com baixa visibilidade ou deformação.
-- Títulos longos ultrapassando a página.
-- Bullets desalinhados e centralizados indevidamente.
-- Timeline com último item fora da área útil.
-- Imagem do DOCX rastreada, mas não inserida visualmente.
-
-### Mantido
-
-- Arquitetura da Fase 1.
-- Domínio sem dependência de bibliotecas de infraestrutura.
-- Compatibilidade com o fluxo desktop do MVP.
-## [0.4.0] - Fase 3: Motor visual profissional e componentes
-
-### Adicionado
-
-- Biblioteca de componentes PPTX reutilizáveis para título, footer, bullets, cards, comparação, timeline, imagem e tabela.
-- `SlideGrid` com colunas, linhas, proporções 60/40 e áreas auxiliares.
-- `LayoutDecision` para registrar motivo da escolha visual, composição, regras acionadas e alternativas.
-- `ContentDensityAnalyzer` para classificar slides em baixa, média, alta ou crítica densidade.
-- Preview HTML automático ao lado do PPTX gerado.
-- Auditoria expandida com contagem de layouts, densidade visual e alertas visuais.
-- Testes automatizados específicos da Fase 3.
-
-### Corrigido
-
-- Timeline longa agora separa conteúdo excedente em slides auxiliares.
-- Comparações extensas agora são divididas em partes menores para evitar slides congestionados.
-- Geração real do documento `O que muda.docx` sem blocos não utilizados e sem overflows críticos.
-
-### Mantido
-
-- Sem React, FastAPI, banco de dados, IA, OCR, exportação PDF final ou plugins externos nesta fase.
-- Pipeline da Fase 1 e melhorias da Fase 2 preservados.
-## [0.4.1] - Sprint 3.1: Validação e correção visual
+- Pipeline completo de geracao e publicacao a partir de documentos.
+- Clean Architecture com dominio, aplicacao, infraestrutura, apresentacao e legado separados.
+- Leitura de DOCX, TXT, Markdown e PDF.
+- Extracao de imagens e tabelas de DOCX.
+- Planejamento rastreavel com `PresentationPlan` e `SlidePlan`.
+- Renderizadores independentes para PPTX, PDF, HTML, DOCX, Markdown e JSON.
+- Manifesto de publicacao com hashes, versao, auditoria e validacao.
+- Pacote ZIP portavel com assets relativos.
+- Asset Manager e Theme Registry.
+- Auditoria de conteudo, imagens, densidade visual e rastreabilidade.
+- Interface desktop Tkinter preservada.
+- Camada de IA desacoplada e opcional.
+- `FakeAIProvider` deterministico.
+- `OllamaProvider` funcional apenas para resumo local.
+- Framework deterministico de avaliacao de resumos por IA.
+- Documentacao de arquitetura, publicacao, IA, Ollama, avaliacao e plano 1.0.
 
 ### Validado
 
-- Renderização de todos os slides via Microsoft PowerPoint COM.
-- Geração de folha de contato com miniaturas numeradas.
-- Conferência estrutural de elementos fora da página, fontes mínimas e duplicidade textual.
-- Conferência textual normalizada entre Word, plano e apresentação final.
+- `python -m pytest`: 65 testes passando.
+- `python -m compileall slideforge tests`: sem erros.
+- `git diff --check`: sem problemas apos a estabilizacao final.
 
-### Corrigido
+### Limitacoes conhecidas
 
-- Banner do cabeçalho com presença visual insuficiente.
-- Slides de comparação com coluna vazia quando sobravam itens apenas de um lado.
-- Marcadores `ANTES`/`DEPOIS` com emoji e conteúdo na mesma linha vindos do Word.
-- Parágrafos inline `ANTES: ... DEPOIS: ...` divididos incorretamente.
-- Slide de sobra com espaço vazio excessivo em comparação longa.
+- Sem React, FastAPI, banco de dados, OCR, RAG, embeddings, multiusuario ou editor web.
+- PDF e documento executivo e pode ter estrutura diferente do PPTX.
+- DOCX usa sumario textual editavel, nao TOC nativo.
+- IA e opcional, local e desativada por padrao.
 
-### Resultado
-
-- `O que muda_slideforge_fase3_1.pptx` gerado com 24 slides.
-- Auditoria sem blocos não utilizados, sem imagens ausentes e sem overflows críticos.
-- Testes automatizados ampliados para 25 casos.
 ## [0.5.0] - Fase 4: Publishing Engine
 
 ### Adicionado
 
-- Porta `DocumentRenderer` para renderização independente de formato.
-- `PublishingEngine` para publicar múltiplos formatos a partir do mesmo `PresentationPlan`.
+- Porta `DocumentRenderer` para renderizacao independente de formato.
+- `PublishingEngine` para publicar multiplos formatos a partir do mesmo `PresentationPlan`.
 - Renderizadores: `PptxRenderer`, `PdfRenderer`, `HtmlRenderer`, `MarkdownRenderer`, `DocxRenderer` e `JsonRenderer`.
-- PDF nativo via ReportLab, sem conversão por PowerPoint.
-- HTML navegável com índice, capítulos, imagens, tabelas e notas do apresentador.
-- Markdown estruturado preservando títulos, listas, imagens e tabelas.
-- DOCX reorganizado com a estrutura lógica da apresentação.
-- JSON completo com metadados, slides, componentes, auditoria, rastreabilidade e estatísticas.
-- `AssetManager` para centralizar banners, logotipos e recursos visuais.
-- `ThemeRegistry` e `PublishingTheme` para evoluir temas sem fixar valores nos renderizadores.
-- Interfaces de extensão futura: `PresentationAdvisor`, `LayoutAdvisor`, `SummaryAdvisor`, `ThemeAdvisor` e `ContentAdvisor`.
-- `PublishPresentationUseCase` para geração corporativa multi-formato.
-- Testes automatizados específicos dos renderizadores e da consistência entre formatos.
+- PDF nativo via ReportLab.
+- HTML navegavel.
+- Markdown estruturado.
+- DOCX reorganizado.
+- JSON completo com metadados, slides, componentes, auditoria e rastreabilidade.
+- `AssetManager`, `ThemeRegistry`, manifesto e pacote ZIP.
 
-### Mantido
+## [0.4.1] - Sprint 3.1: Validacao visual
 
-- Sem React, FastAPI, banco de dados, IA, autenticação, OCR ou multiusuário.
-- Domínio sem dependência de bibliotecas de infraestrutura.
-- Pipeline das fases anteriores preservado.
+### Corrigido
 
-## Sprint 4.1 - Refinamento executivo dos formatos publicados
+- Banner com baixa visibilidade.
+- Comparacoes extensas com desequilibrio visual.
+- Marcadores `ANTES`/`DEPOIS` vindos do Word.
+- Slides com espaco vazio excessivo ou overflows criticos.
 
-- Refinados PDF, HTML, DOCX e Markdown para publicacoes corporativas mais legiveis.
-- Adicionado `PublishingConsistencyValidator` para validar consistencia logica entre formatos.
-- Adicionado manifesto de publicacao com hashes, tamanhos, auditoria, tema e versao.
-- Adicionado pacote ZIP padronizado com os arquivos publicados.
-- Adicionada fonte unica de versao em `slideforge/version.py`.
-- Adicionados testes para PDF 16:9, HTML navegavel, DOCX estruturado, Markdown, manifesto, ZIP e consistencia.
+### Resultado
 
-## RC1 - Portabilidade da primeira release publica
+- Apresentacao real validada com 24 slides.
+- Auditoria sem blocos nao utilizados e sem imagens ausentes.
 
-- Markdown, JSON, manifesto, auditoria e ZIP passaram a ser sanitizados para nao expor caminhos absolutos do sistema operacional.
-- Imagens extraidas do documento sao copiadas para `assets/` e referenciadas por caminho relativo.
-- O ZIP contem `presentation/assets/` com os recursos necessarios para consulta local.
-- O PDF foi definido oficialmente como documento executivo, podendo conter capa, agenda e auditoria alem dos slides logicos.
-- O DOCX mantem sumario textual editavel; TOC nativo fica como melhoria futura.
+## [0.4.0] - Fase 3: Motor visual profissional
+
+### Adicionado
+
+- Componentes PPTX reutilizaveis.
+- Grid visual.
+- `LayoutDecision`.
+- `ContentDensityAnalyzer`.
+- Preview HTML estrutural.
+- Auditoria visual ampliada.
+
+## [0.3.0] - Fase 2: Fidelidade de conteudo e qualidade visual
+
+### Adicionado
+
+- Extracao de imagens DOCX.
+- Leitura estruturada de tabelas DOCX.
+- Leitor PDF inicial.
+- Geometria segura, ajuste tipografico e redimensionamento proporcional de imagens.
+
+## [0.2.0] - Fase 1: Base profissional
+
+### Adicionado
+
+- Arquitetura em camadas.
+- Entidades de dominio.
+- Pipeline `SourceDocument -> PresentationPlan -> PPTXExporter -> ContentAudit`.
+- Leitores DOCX, TXT e Markdown.
+- Exportador PPTX inicial.
+- Testes automatizados.
+- MVP anterior preservado em `slideforge/legacy`.

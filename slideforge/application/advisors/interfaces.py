@@ -1,4 +1,10 @@
 ﻿from typing import Protocol
+from slideforge.application.ai.contracts import (
+    ContentSummarizer,
+    PresentationReviewer,
+    SlideLayoutAdvisor,
+    ThemeAdvisor,
+)
 from slideforge.domain.entities.presentation_plan import PresentationPlan
 
 
@@ -6,17 +12,20 @@ class PresentationAdvisor(Protocol):
     def advise(self, plan: PresentationPlan) -> list[str]: ...
 
 
-class LayoutAdvisor(Protocol):
-    def advise_layouts(self, plan: PresentationPlan) -> list[str]: ...
+class LayoutAdvisor(SlideLayoutAdvisor, Protocol):
+    pass
 
 
-class SummaryAdvisor(Protocol):
-    def summarize(self, plan: PresentationPlan) -> str: ...
+class SummaryAdvisor(ContentSummarizer, Protocol):
+    pass
 
 
-class ThemeAdvisor(Protocol):
-    def recommend_theme(self, plan: PresentationPlan) -> str: ...
+class ThemeAdvisorProtocol(ThemeAdvisor, Protocol):
+    pass
 
 
-class ContentAdvisor(Protocol):
-    def review_content(self, plan: PresentationPlan) -> list[str]: ...
+class ContentAdvisor(PresentationReviewer, Protocol):
+    pass
+
+
+ThemeAdvisor = ThemeAdvisorProtocol

@@ -11,6 +11,10 @@ class PublishedDocument:
     path: Path
 
 
+def output_with_extension(output_stem: Path, extension: str) -> Path:
+    return output_stem.parent / f"{output_stem.name}{extension}"
+
+
 class PublishingEngine:
     def __init__(self, renderers: list[DocumentRenderer], assets=None, theme=None):
         self.renderers = renderers
@@ -24,6 +28,6 @@ class PublishingEngine:
         for renderer in self.renderers:
             if renderer.format_name not in selected:
                 continue
-            output = output_stem.with_suffix(renderer.extension)
+            output = output_with_extension(output_stem, renderer.extension)
             documents.append(PublishedDocument(renderer.format_name, renderer.render(plan, output, audit=audit, assets=self.assets, theme=self.theme)))
         return documents

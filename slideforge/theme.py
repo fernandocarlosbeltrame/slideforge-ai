@@ -27,14 +27,4 @@ class Theme:
 
 
 def get_theme(name: str | None = None) -> Theme:
-    key = (name or "corporate_blue").lower().strip()
-    if key == "usiquimica":
-        return Theme(
-            name="usiquimica",
-            primary=RGBColor(0, 74, 143),
-            secondary=RGBColor(0, 159, 218),
-            accent=RGBColor(62, 181, 73),
-            light=RGBColor(244, 248, 252),
-            footer_background=RGBColor(0, 74, 143),
-        )
     return Theme()

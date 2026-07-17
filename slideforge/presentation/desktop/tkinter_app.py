@@ -1,4 +1,4 @@
-﻿import tkinter as tk
+import tkinter as tk
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 from slideforge.application.use_cases.generate_presentation import GeneratePresentationUseCase
@@ -27,7 +27,7 @@ class SlideForgeApp(tk.Tk):
         frame = tk.Frame(self)
         frame.pack(fill="x", pady=8)
         tk.Label(frame, text="Tema", width=24, anchor="w").pack(side="left")
-        ttk.Combobox(frame, textvariable=self.theme_name, values=["corporate_blue", "usiquimica"], state="readonly").pack(side="left", fill="x", expand=True, padx=8)
+        ttk.Combobox(frame, textvariable=self.theme_name, values=["corporate_blue"], state="readonly").pack(side="left", fill="x", expand=True, padx=8)
         tk.Checkbutton(self, text="Preservar todo o conteúdo", variable=self.preserve_all).pack(anchor="w")
         tk.Checkbutton(self, text="Gerar relatório de auditoria", variable=self.generate_audit).pack(anchor="w")
         self.progress = ttk.Progressbar(self, mode="indeterminate")

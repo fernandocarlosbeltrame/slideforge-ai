@@ -1,41 +1,36 @@
-﻿# SlideForge AI
+# SlideForge AI
 
-Aplicação para transformar documentos Word (`.docx`), PDF, Markdown e TXT em apresentações PowerPoint profissionais, preservando o conteúdo e criando um plano rastreável antes da geração do arquivo.
+Aplicacao para transformar documentos Word (`.docx`), PDF, Markdown e TXT em apresentacoes profissionais e pacotes de publicacao corporativa.
+
+O SlideForge AI interpreta o conteudo, cria um plano rastreavel de apresentacao e publica os mesmos dados em multiplos formatos: PPTX, PDF, HTML, DOCX, Markdown, JSON, manifesto e pacote ZIP.
 
 ## Status
 
-Fase 4 concluída: Publishing Engine com renderização PPTX, PDF, HTML, Markdown, DOCX e JSON a partir do mesmo PresentationPlan.
+Versao preparada: **1.0.0**.
 
-## Funcionalidades atuais
+A versao 1.0.0 consolida o pipeline deterministico, a arquitetura limpa, os renderizadores multi-formato, auditoria, rastreabilidade, empacotamento e a camada opcional de IA local para resumo via Ollama.
+
+## Principais funcionalidades
 
 - Leitura de DOCX, TXT, Markdown e PDF.
-- Extração de imagens embutidas em DOCX preservando a ordem do documento.
-- Extração inicial de texto e imagens em PDF com PyMuPDF, sem OCR.
+- Extracao de imagens embutidas em DOCX.
 - Leitura estruturada de tabelas DOCX.
-- Criação de `SourceDocument`, `DocumentSection`, `ContentBlock`, `PresentationPlan` e `SlidePlan`.
-- Seleção determinística de layouts: capa, bullets, cards, timeline, comparação, tabela e imagem.
-- Exportação para PPTX editável em widescreen 16:9.
-- Cabeçalho/banner proporcional, sem deformação.
-- Rodapé fixo e consistente.
-- Ajuste inicial de títulos longos e corpo do slide.
-- Redimensionamento proporcional de imagens por `contain`.
-- Validação de plano antes da exportação.
-- Auditoria de conteúdo, imagens, títulos, overflows e densidade visual.
-- Biblioteca de componentes PPTX: título, footer, bullets, cards, comparação, timeline, imagem e tabela.
-- Sistema de grid reutilizável para colunas, linhas, proporções 60/40 e áreas seguras.
-- Decisão visual rastreável por slide, com motivo, regras acionadas, alternativas e densidade.
-- Análise de densidade de conteúdo para evitar slides congestionados.
-- Preview HTML estrutural com layout, composição, densidade e blocos utilizados.
-- Publishing Engine com renderizadores independentes: PPTX, PDF, HTML, Markdown, DOCX e JSON.
-- PDF nativo via ReportLab, sem depender de conversão do PowerPoint.
-- HTML navegável com índice, capítulos, imagens, tabelas e notas.
-- Markdown estruturado com hierarquia, listas, tabelas e imagens.
-- DOCX reorganizado a partir da estrutura lógica da apresentação.
-- JSON completo com metadados, slides, componentes, auditoria e rastreabilidade.
-- Asset Manager para banners, logos e recursos visuais.
-- Theme Registry para centralizar tokens visuais por tema.
-- Interfaces de extensão para IA futura, sem implementação concreta.
-- Interface Tkinter com seleção de tema e auditoria.
+- Planejamento rastreavel com `SourceDocument`, `ContentBlock`, `PresentationPlan` e `SlidePlan`.
+- Selecao deterministica de layouts: capa, bullets, cards, timeline, comparacao, tabela e imagem.
+- Exportacao PPTX editavel em widescreen 16:9.
+- Exportacao PDF executiva nativa via ReportLab.
+- Exportacao HTML navegavel e portavel.
+- Exportacao DOCX reorganizada.
+- Exportacao Markdown estruturada.
+- Exportacao JSON com metadados, slides, componentes, auditoria e rastreabilidade.
+- Manifesto com hashes e validacao.
+- Pacote ZIP com assets relativos.
+- Asset Manager para banners, logos e imagens.
+- Theme Registry para temas visuais.
+- Auditoria de conteudo, imagens, densidade, rastreabilidade e consistencia.
+- Camada de IA desacoplada, com `FakeAIProvider` e `OllamaProvider` opcional para resumo.
+- Avaliacao deterministica da qualidade de resumos por IA.
+- Interface desktop Tkinter.
 - MVP anterior preservado em `slideforge/legacy`.
 
 ## Executar
@@ -48,56 +43,92 @@ python app.py
 ## Rodar testes
 
 ```bash
-pytest
+python -m pytest
+python -m compileall slideforge tests
+```
+
+## Gerar publicacao por codigo
+
+```python
+from pathlib import Path
+from slideforge.application.use_cases.publish_presentation import PublishPresentationUseCase
+
+result = PublishPresentationUseCase(theme_name="corporate_blue").execute(
+    Path("entrada.docx"),
+    Path("saida/Minha_Apresentacao"),
+    banner_path="banner.jpg",
+)
 ```
 
 ## Arquitetura
 
-Consulte `docs/ARCHITECTURE.md`, `docs/PHASE3_VISUAL_ENGINE.md` e `docs/PUBLISHING_ENGINE.md`.
-
-Pipeline principal:
+O projeto segue Clean Architecture:
 
 ```text
 DocumentReader
 ↓
 SourceDocument
 ↓
-ContentBlock
-↓
 PresentationPlanner
 ↓
-SlidePlan
+PresentationPlan
 ↓
-PPTXExporter
+ContentAuditor
 ↓
-ContentAudit
+PublishingEngine
+↓
+PPTX | PDF | HTML | DOCX | Markdown | JSON
 ```
 
-## Limitações atuais
+Camadas principais:
 
-- Ainda não há React.
-- Ainda não há FastAPI.
-- Ainda não há banco de dados.
-- Ainda não há IA.
-- Exportação PDF nativa disponível na Fase 4.
-- PDF escaneado é identificado como limitação, sem OCR.
-- A inspeção visual fina ainda depende de abertura no PowerPoint pelo usuário, mas a Fase 3 gera preview HTML para revisão estrutural.
+- `slideforge/domain`: entidades e regras puras.
+- `slideforge/application`: casos de uso, auditoria, validacao, publicacao e contratos.
+- `slideforge/infrastructure`: leitores, renderizadores, temas, assets e provedores de IA.
+- `slideforge/presentation`: interface desktop.
+- `slideforge/legacy`: MVP preservado.
 
+## Inteligencia artificial
 
+A IA e opcional e fica desativada por padrao.
 
-## Sprint 4.1 - Refinamento Executivo
+Recursos atuais:
 
-O SlideForge agora gera um pacote de publicacao mais completo:
+- Contratos neutros para provedores.
+- `FakeAIProvider` deterministico.
+- `OllamaProvider` local para `ContentSummarizer`.
+- Fallback seguro.
+- Avaliacao deterministica de resumos.
 
-- PDF executivo em proporcao 16:9.
-- HTML local, responsivo e navegavel.
-- DOCX editavel com capa, sumario e estilos.
-- Markdown com metadados, indice e rastreabilidade discreta.
-- JSON com versao do sistema.
-- Manifesto `.manifest.json` com hashes e auditoria.
-- Pacote ZIP padronizado com todos os formatos.
+Nao ha chamadas reais para OpenAI, Azure OpenAI ou servicos externos nesta versao.
 
-Documentacao complementar:
+## Documentacao
 
-- `docs/PUBLISHING_PACKAGE.md`
-- `docs/FORMAT_CAPABILITIES.md`
+- `docs/ARCHITECTURE.md`
+- `docs/PUBLISHING_ENGINE.md`
+- `docs/AI_ARCHITECTURE.md`
+- `docs/OLLAMA_INTEGRATION.md`
+- `docs/AI_EVALUATION.md`
+- `docs/V1_RELEASE_PLAN.md`
+- `docs/RELEASE_NOTES_1.0.0.md`
+- `docs/RELEASE_CHECKLIST_1.0.md`
+- `docs/FINAL_RELEASE_REPORT.md`
+
+## Limitacoes conhecidas
+
+- PDF escaneado nao possui OCR.
+- PDF e documento executivo, nao espelho 1:1 do PPTX.
+- DOCX possui sumario textual editavel; TOC nativo do Word fica para evolucao futura.
+- Notas nativas no painel do PowerPoint e hyperlinks internos nativos no PPTX ficam para evolucao futura.
+- IA local com Ollama e opcional e depende de ambiente local configurado.
+- A revisao visual fina ainda deve ser feita por uma pessoa antes de uso externo critico.
+
+## Roadmap futuro
+
+- Melhorias de UX na interface desktop.
+- Composition root mais explicita.
+- Mais temas visuais.
+- Testes visuais automatizados mais robustos.
+- UI para configuracao de IA local.
+- Versao web futura com React/FastAPI.
+- OCR, RAG, embeddings e provedores externos apenas em versoes futuras.

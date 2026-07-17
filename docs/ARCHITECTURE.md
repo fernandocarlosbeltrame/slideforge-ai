@@ -1,69 +1,10 @@
-﻿# Arquitetura - SlideForge AI
+﻿# Arquitetura - SlideForge AI v1.0.0
 
-A Fase 1 implementa uma base limpa para transformar documentos em apresentações rastreáveis.
+Este documento descreve a arquitetura consolidada da versao 1.0.0.
 
-## Camadas
+## Principio central
 
-- `domain`: entidades e regras puras, sem dependência de bibliotecas externas.
-- `application`: casos de uso, planejamento e auditoria.
-- `infrastructure`: leitores de arquivo e exportadores.
-- `presentation`: interface desktop Tkinter.
-- `legacy`: cópia funcional do MVP anterior.
-
-## Pipeline
-
-```text
-SourceDocument
-↓
-DocumentSection / ContentBlock
-↓
-PresentationPlan / SlidePlan
-↓
-LayoutSelector
-↓
-PPTXExporter
-↓
-ContentAudit
-```
-
-## Rastreabilidade
-
-Cada `SlidePlan` mantém `source_block_ids`, permitindo identificar:
-
-- blocos utilizados;
-- blocos parcialmente utilizados;
-- blocos divididos;
-- blocos não utilizados.
-
-## Limitações da Fase 1
-
-- Sem FastAPI.
-- Sem React.
-- Sem banco de dados.
-- Sem PDF.
-- Sem IA.
-- Sem sistema externo de plugins.
-- Extração de imagem DOCX é básica e salva mídia em `.slideforge_assets`.
-
-## Fase 2 - Fidelidade visual
-
-A Fase 2 adiciona serviços de apoio à renderização sem mover regras de negócio para o exportador.
-
-Novos serviços:
-
-- `SlideGeometry`: dimensões 16:9, cabeçalho, rodapé e área segura.
-- `BoundingBox`: validação de coordenadas e dimensões.
-- `ImageFitCalculator`: cálculo proporcional para `contain`, `cover`, `original`, `fit_width` e `fit_height`.
-- `TypographyFitter`: estimativa inicial de ajuste de títulos e textos.
-- `PresentationValidator`: validação do plano antes da exportação.
-
-O domínio continua livre de dependências como `python-pptx`, `python-docx`, `Pillow` e `PyMuPDF`.
-
-## Fase 4 - Publishing Engine
-
-A Fase 4 adiciona uma camada de publicação sem alterar o domínio.
-
-Fluxo:
+O SlideForge AI transforma documentos em um plano intermediario rastreavel antes de publicar qualquer formato.
 
 ```text
 DocumentReader
@@ -78,29 +19,105 @@ ContentAuditor
 ↓
 PublishingEngine
 ↓
-DocumentRenderer(s)
-↓
-PPTX • PDF • HTML • Markdown • DOCX • JSON
+PPTX | PDF | HTML | DOCX | Markdown | JSON
 ```
 
-Cada renderizador consome o mesmo `PresentationPlan`. O domínio permanece livre de dependências como `python-pptx`, `ReportLab` ou `python-docx`.
+## Camadas
 
-Novos pontos de infraestrutura:
+- `domain`: entidades, enums, value objects e servicos puros.
+- `application`: casos de uso, planejamento, validacao, auditoria, publicacao e contratos.
+- `infrastructure`: leitores, renderizadores, temas, assets e provedores de IA.
+- `presentation`: interface desktop Tkinter.
+- `legacy`: copia funcional do MVP anterior.
 
-- `slideforge/application/ports/document_renderer.py`
-- `slideforge/application/publishing/publishing_engine.py`
-- `slideforge/infrastructure/renderers/`
-- `slideforge/infrastructure/assets/`
-- `slideforge/infrastructure/themes/`
+## Dominio
 
-Interfaces para IA futura ficam em `slideforge/application/advisors`, sem implementação concreta nesta fase.
+O dominio nao depende de bibliotecas de infraestrutura.
 
-## Sprint 4.1 - Publishing Package
+Entidades principais:
 
-A camada de publicacao ganhou tres componentes de aplicacao:
+- `SourceDocument`
+- `DocumentSection`
+- `ContentBlock`
+- `PresentationPlan`
+- `SlidePlan`
+- `ContentAudit`
+- `LayoutDecision`
 
-- `PublishingConsistencyValidator`: compara a consistencia logica dos formatos gerados.
-- `ManifestBuilder`: gera manifesto com hashes, tamanhos, versao, auditoria e validacao.
-- `PublishingPackageBuilder`: cria ZIP padronizado em `presentation/`.
+Value objects:
 
-O dominio permanece isolado. Todos os renderizadores continuam consumindo o mesmo `PresentationPlan`.
+- `BoundingBox`
+- `TableData`
+
+## Aplicacao
+
+Responsabilidades:
+
+- selecionar leitor adequado;
+- criar plano de apresentacao;
+- validar plano;
+- auditar conteudo;
+- publicar formatos;
+- montar manifesto e pacote;
+- aplicar IA opcional de forma controlada.
+
+Casos de uso principais:
+
+- `GeneratePresentationUseCase`
+- `PublishPresentationUseCase`
+
+## Infraestrutura
+
+Leitores:
+
+- DOCX
+- TXT
+- Markdown
+- PDF sem OCR
+
+Renderizadores:
+
+- PPTX
+- PDF
+- HTML
+- DOCX
+- Markdown
+- JSON
+
+Outros componentes:
+
+- `AssetManager`
+- `ThemeRegistry`
+- provedores de IA fake/local
+- sanitizacao de caminhos em publicacoes
+
+## Rastreabilidade
+
+Cada slide referencia os IDs dos blocos usados. A auditoria e o manifesto permitem verificar:
+
+- blocos utilizados;
+- blocos nao utilizados;
+- imagens;
+- tabelas;
+- densidade;
+- alertas;
+- consistencia entre formatos.
+
+## IA
+
+A IA e opcional, desativada por padrao e isolada por contratos em `slideforge/application/ai`.
+
+A versao 1.0.0 possui:
+
+- `FakeAIProvider` deterministico;
+- `OllamaProvider` local para resumo;
+- fallback;
+- avaliador deterministico de qualidade de resumo.
+
+Nenhum provedor externo real e chamado por padrao.
+
+## Decisao arquitetural v1.0
+
+A arquitetura esta consolidada para a versao 1.0.0. Nao ha necessidade de reescrever o nucleo antes da release.
+
+Melhoria futura recomendada: extrair uma composition root explicita para montar leitores, renderizadores, temas e provedores fora do caso de uso principal.

@@ -1,4 +1,4 @@
-﻿from dataclasses import dataclass, field
+from dataclasses import dataclass, field
 from pptx.dml.color import RGBColor
 from slideforge.theme import Theme, get_theme
 
@@ -27,7 +27,6 @@ class ThemeRegistry:
     def __init__(self):
         self._themes: dict[str, PublishingTheme] = {}
         self.register(self._from_base(get_theme("corporate_blue")))
-        self.register(self._from_base(get_theme("usiquimica")))
 
     def register(self, theme: PublishingTheme) -> None:
         self._themes[theme.name] = theme

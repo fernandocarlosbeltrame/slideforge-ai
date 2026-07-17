@@ -1,4 +1,4 @@
-﻿import json
+import json
 from pathlib import Path
 from docx import Document
 from pptx import Presentation
@@ -34,10 +34,10 @@ def test_asset_manager_registers_and_locates_banner(tmp_path: Path):
     assert manager.locate("banner") == banner
 
 
-def test_theme_registry_exposes_usiquimica():
+def test_theme_registry_exposes_corporate_blue():
     registry = ThemeRegistry()
-    assert "usiquimica" in registry.names()
-    assert registry.get("usiquimica").base.name == "usiquimica"
+    assert "corporate_blue" in registry.names()
+    assert registry.get("corporate_blue").base.name == "corporate_blue"
 
 
 def test_json_renderer_preserves_traceability(tmp_path: Path):
@@ -78,7 +78,7 @@ def test_publish_use_case_exports_selected_formats(tmp_path: Path):
     doc.add_heading("Título", level=1)
     doc.add_paragraph("Primeiro ponto", style=None)
     doc.save(docx)
-    result = PublishPresentationUseCase(theme_name="usiquimica").execute(docx, tmp_path / "saida", formats={"json", "markdown", "html"})
+    result = PublishPresentationUseCase(theme_name="corporate_blue").execute(docx, tmp_path / "saida", formats={"json", "markdown", "html"})
     names = {doc.format_name for doc in result.documents}
     assert names == {"json", "markdown", "html"}
     assert result.audit.unused_block_ids == set()

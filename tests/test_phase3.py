@@ -1,4 +1,4 @@
-﻿from pathlib import Path
+from pathlib import Path
 from pptx import Presentation
 from slideforge.application.preview import HTMLPreviewGenerator
 from slideforge.application.services.content_auditor import ContentAuditor
@@ -47,9 +47,9 @@ def test_layout_decision_keeps_reason_and_composition():
     assert decision.visual_composition == "two_column_comparison"
 
 
-def test_usiquimica_theme_tokens_available():
-    theme = get_theme("usiquimica")
-    assert theme.name == "usiquimica"
+def test_corporate_blue_theme_tokens_available():
+    theme = get_theme("corporate_blue")
+    assert theme.name == "corporate_blue"
     assert theme.primary is not None
     assert theme.secondary is not None
 
@@ -69,7 +69,7 @@ def test_phase3_pptx_generation_valid(tmp_path: Path):
     doc = SourceDocument(id="doc", name="teste.txt", source_path="teste.txt", format="txt", sections=[section])
     plan = PresentationPlanner().create_plan(doc)
     out = tmp_path / "phase3.pptx"
-    PPTXExporter(theme=get_theme("usiquimica")).export(plan, out)
+    PPTXExporter(theme=get_theme("corporate_blue")).export(plan, out)
     prs = Presentation(out)
     assert out.exists()
     assert len(prs.slides) == len(plan.slides)
